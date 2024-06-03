@@ -281,7 +281,7 @@ class Feeder_client:
                 print("after:",round(self.feed_weight_filtered,3))
                 prev_feed_weight = self.feed_weight_filtered
                 self.state_msg['remains'] = round(self.feed_weight_filtered,2)
-                # time.sleep(1)
+                time.sleep(0.01)
             except KeyboardInterrupt:
                 print('error in LC_event')
     
