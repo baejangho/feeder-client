@@ -160,12 +160,13 @@ class Feeder_client:
             return True
         
         self.is_terminated_cmd_loop = False
+        
         while not self.event.is_set():
             try:
                 buff = self.cmd_socket.recv(self.BUFFER)
                 data_str = buff.decode('utf-8')  # 바이트를 문자열로 변환
                 match = re.search(r'\{.*\}', data_str) # {} 사이의 문자열 추출
-                print('cmd buff:',buff)
+                # print('cmd buff:',buff)
                 if match:   # {} 사이의 문자열이 있는 경우
                     json_str = match.group()  # {} 사이의 문자열 추출
                     if is_json(json_str):   # 서버에서 받은 명령인 경우
@@ -186,7 +187,6 @@ class Feeder_client:
                                 self.init_weight = self.feed_weight_filtered
                                 self.feeding_amount = data["value"]["feeding_amount"] # kg  
                                 self.target_weight = self.init_weight - self.feeding_amount # kg
-            
                                 if self.state_msg['feeding_mode'] == 'auto':
                                     self.feeding_cmd = True
                                     self.feeding_pace = data["value"]["feeding_pace"]  # kg/min
@@ -197,12 +197,11 @@ class Feeder_client:
                                     ######################### 
                                 else:
                                     self.feeding_cmd = False
-                                
+            
                                 ## 남은 사료량 확인 ##
                                 if self.check_feeding_amount(self.target_weight):
                                     self.feeder_stop()
                                     self.feeding_cmd = False
-                                    
                                     ### feeding 실패 log ###
                                     ### 코드 작성 필요 ###
                                     ########################  
@@ -219,19 +218,17 @@ class Feeder_client:
                                 if self.check_feeding_amount(self.target_weight):
                                     self.feeder_stop()
                                     self.feeding_cmd = False
-
                                 else:   # 사료 충분
                                     self.feeding_cmd = True
                                     self.feeding_pace = data["value"]["feeding_pace"]           # kg/min     
                                     self.feeding_distance = data["value"]["feeding_distance"]   # m  
                                     self.desired_weight = self.init_weight                      # kg 
                                     ## feeding start log ##
-                                    # 코드 작성 필요
-                                                        
+                                    ## 코드 작성 필요 ##                            
                             elif data["cmd"] == "stop":
                                 self.feeder_stop()
                                 ## feeding stop log ##
-                                # 코드 작성 필요
+                                ## 코드 작성 필요    ##
                             else:
                                 print('control command error')    
                         else:
@@ -241,6 +238,7 @@ class Feeder_client:
                 else:
                     # print('서버와 연결됨')
                     pass
+                
             except Exception as e: 
                 print('error in cmd_event',e)
                 ## state_msg update ##
@@ -255,8 +253,7 @@ class Feeder_client:
     def LC_event(self):
         
         if sim == False:
-            # 초기 사료량 확인
-            # 센서로부터 받은 사료량
+            # 초기 사료량 확인, 센서로부터 받은 사료량
             feed_weight_LC = self.ML.get_weight(20)/1000 # kg 단위
         else:
             feed_weight_LC = 20
@@ -404,8 +401,6 @@ class Feeder_client:
                 self.feeder_stop()
                 # if sim == False:
                 #     self.ML.terminate()
-                # if control_timer is not None:
-                #     control_timer.cancel()
                 print('control event terminated!')  
             
     def feeder_stop(self):
