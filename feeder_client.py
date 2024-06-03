@@ -114,7 +114,7 @@ class Feeder_client:
         self.is_terminated_state_loop = False
         while not self.event.is_set():
             try:
-                print('state_event 시작')
+                # print('state_event 시작')
                 s_time = time.time()
                 data = self.state_socket.recv(self.BUFFER)
                 print('state server socket is connected')
@@ -153,15 +153,17 @@ class Feeder_client:
         self.is_terminated_cmd_loop = False
         while not self.event.is_set():
             try:
-                data = self.cmd_socket.recv(self.BUFFER)
-                if data == b'is_connected':
+                buff = self.cmd_socket.recv(self.BUFFER)
+                print(buff)
+                if buff == b'is_connected':
                     print('cmd server socket is connected')
                     pass
                 else:
-                    data_str = data.decode('utf-8')  # 바이트를 문자열로 변환
+                    data_str = buff.decode('utf-8')  # 바이트를 문자열로 변환
                     json_str = re.search(r'\{.*\}', data_str).group()  # {} 사이의 문자열 추출
-                    print(json_str)
+                    # print(json_str)
                     data = json.loads(json_str)
+                    print(data)
                     if data["type"] == 'set':
                         if data["cmd"] == "size":
                             self.set_feed_size(data["value"])
@@ -261,7 +263,7 @@ class Feeder_client:
                     ### 시뮬레이션을 통한 사료량 업데이트 ###
                     feed_weight_LC = self.feed_weight_sim
                     
-                print("real:",feed_weight_LC)
+                # print("real:",feed_weight_LC)
                 if prev_feed_weight is not None:
                     if feed_weight_LC == 0:
                         self.feed_weight_filtered = prev_feed_weight
@@ -278,7 +280,7 @@ class Feeder_client:
                 else:
                     self.feed_weight_filtered = feed_weight_LC
                 
-                print("after:",round(self.feed_weight_filtered,3))
+                # print("after:",round(self.feed_weight_filtered,3))
                 prev_feed_weight = self.feed_weight_filtered
                 self.state_msg['remains'] = round(self.feed_weight_filtered,2)
                 time.sleep(0.01)

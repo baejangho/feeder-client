@@ -36,7 +36,7 @@ class Pid_control:
                 result = self.max
             elif result < self.min:
                 result = self.min
-            print('pwm result:',result)
+            # print('pwm result:',result)
             self.pre_error = error
         except:
             result = 0 
